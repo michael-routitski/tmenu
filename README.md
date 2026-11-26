@@ -6,8 +6,9 @@
 - Navigate with arrow keys only: less typing and distractions.
 - Easy configuration via JSON files in `~/.tmenu` by default or place menu configs anywhere you want.
 - Menu definition config is the only positional argument: `tmenu <path_to_menu_config>`.
-- Define one short alias for a group of commands:
-  ```
+- Define one short alias for a group of commands
+  
+  `
 $ dim
   Set DP-1 brightness to 0.3
   Set DP-1 brightness to 0.4
@@ -18,7 +19,7 @@ $ dim
   Set DP-1 brightness to 0.9
   Set DP-1 brightness to FULL
   Edit config...
-  ```
+  `
 
 ## Capabilities
 
