@@ -1,0 +1,119 @@
+.TH TMENU 1 "November 2026" "dev-workflow-script-bundle" "User Commands"
+.SH NAME
+tmenu \- interactive terminal command launcher
+.SH SYNOPSIS
+.B tmenu
+.RB [ \-n | \-\-dry-run ]
+.RB [ \-h | \-\-help ]
+.RI [ JSON_FILE ]
+.SH DESCRIPTION
+.B tmenu
+reads a JSON configuration and presents each command as a selectable terminal
+item. The selected command is passed to
+.BR bash (1)
+for execution.
+.PP
+Use the up and down arrow keys to move through the menu. Press the right arrow
+key or Enter to select an item. Press the left arrow key or Ctrl+C to cancel.
+.SH OPTIONS
+.TP
+.BI \-n ", " \-\-dry-run
+Collect placeholder values and print the resolved command instead of executing it.
+.TP
+.B \-h\fR, \fB\-\-help
+Display usage information and exit.
+.TP
+.B \-\-
+End option parsing. The next argument is treated as
+.IR JSON_FILE ,
+even if it begins with a hyphen.
+.SH CONFIGURATION RESOLUTION
+.TP
+.I JSON_FILE
+The optional positional argument.
+.TP
+.I tmenu.default.json
+The bundled fallback file beside
+.B tmenu.sh .
+.SH CONFIGURATION FILES
+The configuration must be a JSON array containing menu items with:
+.TP
+.B name
+Required string label shown in the menu.
+.TP
+.B run
+Required string containing the shell command.
+.TP
+.B confirm
+Optional JSON boolean. When true, confirmation is requested before execution.
+.PP
+The
+.I run
+value may contain named placeholders in
+.B ${variable_name}
+form. The menu prompts once for each distinct placeholder, replaces underscores
+with spaces in the prompt label, and accepts empty values. Entered text is passed
+to Bash as typed. Escape or the left-arrow key aborts placeholder collection and
+returns to the menu.
+.PP
+Bare
+.B $variable_name
+syntax is invalid. The menu reports the configuration source line and exits with
+status 1.
+.SH CONFIGURATION SECURITY
+The command file must exist, be readable, not be world-writable, and be owned
+by the current user or root. Invalid JSON, empty menus, mismatched entries,
+unsupported placeholders, and unsafe configuration ownership are rejected.
+.PP
+Destructive commands and items with
+.B confirm
+enabled require confirmation. Commands referencing
+.B tmenu
+itself are allowed, so nested menus can use hierarchical JSON configurations.
+.SH EXAMPLES
+Use the bundled default configuration:
+.PP
+.nf
+.RS
+tmenu
+.RE
+.fi
+.PP
+Use a use-case configuration:
+.PP
+.nf
+.RS
+tmenu /path/to/dev-workflow-script-bundle/src/sh/menu-config-bundle/tmenu.git.json
+.RE
+.fi
+.PP
+Print a resolved command instead of executing it:
+.PP
+.nf
+.RS
+tmenu --dry-run commands.json
+.RE
+.fi
+.SH FILES
+.TP
+.I tmenu.sh
+Linux implementation in the
+.B sh
+directory.
+.TP
+.I tmenu.default.json
+Bundled minimal Linux command configuration beside
+.B tmenu.sh .
+.TP
+.I menu-config-bundle/tmenu.git.json
+Bundled Git command use-case configuration.
+.SH EXIT STATUS
+.TP
+.B 0
+The command completed successfully, or the launcher was canceled.
+.TP
+.B 1
+A runtime/configuration error, invalid arguments, or security refusal occurred.
+.TP
+.B 130
+The launcher was interrupted.

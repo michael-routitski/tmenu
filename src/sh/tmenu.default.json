@@ -1,0 +1,10 @@
+[
+  { "name": "List files",               "run": "ls",         "confirm": false },
+  { "name": "List files (long format)", "run": "ls -la",     "confirm": false },
+  { "name": "Print working directory",  "run": "pwd",        "confirm": false },
+  { "name": "Print date and time",      "run": "date",       "confirm": false },
+  { "name": "Print current user",       "run": "whoami",     "confirm": false },
+  { "name": "Print system information", "run": "uname -a",   "confirm": false },
+  { "name": "Print disk usage",         "run": "df -h",      "confirm": false },
+  { "name": "Print environment",        "run": "env",        "confirm": false }
+]

@@ -1,0 +1,18 @@
+[
+  { "name": "Status (short)",              "run": "git status -sb",                              "confirm": false },
+  { "name": "Diff (unstaged)",             "run": "git diff",                                    "confirm": false },
+  { "name": "Diff (staged)",               "run": "git diff --staged",                           "confirm": false },
+  { "name": "Log (last 15 commits)",       "run": "git log --oneline --graph --decorate -n 15",  "confirm": false },
+  { "name": "Branches (local & remote)",   "run": "git branch -vv -a",                           "confirm": false },
+  { "name": "Stash list",                  "run": "git stash list",                              "confirm": false },
+  { "name": "Fetch & prune remotes",       "run": "git fetch --all --prune",                     "confirm": false },
+  { "name": "Pull (rebase)",               "run": "git pull --rebase",                           "confirm": true  },
+  { "name": "Stage all + Show status",     "run": "git add .; git status -sb",                   "confirm": true  },
+  { "name": "Stage all + Commit",          "run": "git add -A && git commit -m \"${commit_message}\"", "confirm": true  },
+  { "name": "Stage all + Commit + Push",   "run": "git add -A && git commit -m \"${commit_message}\" && git push -u origin HEAD", "confirm": true  },
+  { "name": "Amend last commit (no edit)", "run": "git commit --amend --no-edit",                "confirm": true  },
+  { "name": "Undo local commit",           "run": "if ! git rev-parse --verify HEAD >/dev/null 2>&1; then echo \"Error: No local commit to undo.\" >&2; exit 1; fi; if ! git rev-parse --verify HEAD^ >/dev/null 2>&1; then echo \"Error: Cannot undo the root commit.\" >&2; exit 1; fi; if git for-each-ref --contains HEAD --format='%(refname)' refs/remotes/ | grep -q .; then echo \"Error: Latest commit is already pushed to a remote; refusing to undo.\" >&2; exit 1; fi; git reset --soft HEAD^", "confirm": true  },
+  { "name": "Push current branch",         "run": "git push -u origin HEAD",                     "confirm": true  },
+  { "name": "Stash working tree",          "run": "git stash push -u",                           "confirm": true  },
+  { "name": "Pop latest stash",            "run": "git stash pop",                               "confirm": true  }
+]
