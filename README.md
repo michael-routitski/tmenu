@@ -7,19 +7,6 @@
 - Easy configuration via JSON files in `~/.tmenu` by default or place menu configs anywhere you want.
 - Menu definition config is the only positional argument: `tmenu <path_to_menu_config>`.
 - Define one short alias for a group of commands
-  
-  `
-$ dim
-  Set DP-1 brightness to 0.3
-  Set DP-1 brightness to 0.4
-  Set DP-1 brightness to 0.5
-  Set DP-1 brightness to 0.6
-  Set DP-1 brightness to 0.7
-> Set DP-1 brightness to 0.8
-  Set DP-1 brightness to 0.9
-  Set DP-1 brightness to FULL
-  Edit config...
-  `
 
 ## Capabilities
 
@@ -35,3 +22,45 @@ $ dim
 ## Follows Linux Phylosophy
 
 - Does one thing and does it well.
+
+
+## Demo
+
+A simple menu to dim the display
+
+Step 1. Define menu config `~/.tmenu/tmenu.dp-1-brightness.json`:
+   
+```
+[
+  { "name": "Set DP-1 brightness to 0.3", "run": "xrandr --output DP-1 --brightness 0.3", "confirm": false },
+  { "name": "Set DP-1 brightness to 0.4", "run": "xrandr --output DP-1 --brightness 0.4", "confirm": false },
+  { "name": "Set DP-1 brightness to 0.5", "run": "xrandr --output DP-1 --brightness 0.5", "confirm": false },
+  { "name": "Set DP-1 brightness to 0.6", "run": "xrandr --output DP-1 --brightness 0.6", "confirm": false },
+  { "name": "Set DP-1 brightness to 0.7", "run": "xrandr --output DP-1 --brightness 0.7", "confirm": false },
+  { "name": "Set DP-1 brightness to 0.8", "run": "xrandr --output DP-1 --brightness 0.8", "confirm": false },
+  { "name": "Set DP-1 brightness to 0.9", "run": "xrandr --output DP-1 --brightness 0.9", "confirm": false },
+  { "name": "Set DP-1 brightness to FULL", "run": "xrandr --output DP-1 --brightness 1.0", "confirm": false }
+]
+```
+
+Step 2: Create a short alias in `~/.bashrc`:
+
+```
+alias dim="tmenu ~/.tmenu/tmenu.dp-1-brightness.json"
+```
+
+Step 3: Enjoy:
+
+```
+$ dim
+  Set DP-1 brightness to 0.3
+  Set DP-1 brightness to 0.4
+  Set DP-1 brightness to 0.5
+  Set DP-1 brightness to 0.6
+  Set DP-1 brightness to 0.7
+> Set DP-1 brightness to 0.8
+  Set DP-1 brightness to 0.9
+  Set DP-1 brightness to FULL
+  Edit config...
+```
+
