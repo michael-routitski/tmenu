@@ -189,10 +189,6 @@ validate_json_placeholders() {
                         printf 'Line %d: %s\n' "$line_number" "$line" >&2
                         return "$ERROR_STATUS"
                     fi
-                else
-                    echo "Error: Invalid JSON in '$file': bare \$variable_name placeholders are not supported; use \${variable_name}." >&2
-                    printf 'Line %d: %s\n' "$line_number" "$line" >&2
-                    return "$ERROR_STATUS"
                 fi
             done
         fi

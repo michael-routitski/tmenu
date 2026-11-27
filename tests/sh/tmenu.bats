@@ -298,17 +298,14 @@ EOF
   [[ "$output" == *"[dry-run] printf "* ]]
 }
 
-@test "bare variable placeholders are rejected with the source line" {
-  config="$BATS_TEST_TMPDIR/invalid-placeholders.json"
-  printf '[\n  {"name":"bad","run":"mkdir $dir_name","confirm":false}\n]\n' > "$config"
+@test "shell environment variables pass through to Bash" {
+  config="$BATS_TEST_TMPDIR/shell-variables.json"
+  printf '%s\n' '[{"name":"print environment value","run":"printf %s \"$TMENU_TEST_ROOT\"","confirm":false}]' > "$config"
 
-  run bash "$SCRIPT_PATH" "$config" </dev/null
+  run env TMENU_TEST_ROOT="atv2 root" bash "$SCRIPT_PATH" "$config" <<< $'\n'
 
-  [ "$status" -eq 1 ]
-  [[ "$output" == *"Invalid JSON"* ]]
-  [[ "$output" == *"bare \$variable_name placeholders are not supported"* ]]
-  [[ "$output" == *"Line 2:"* ]]
-  [[ "$output" == *'mkdir $dir_name'* ]]
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"atv2 root"* ]]
 }
 
 @test "invalid braced placeholder syntax is rejected with the source line" {

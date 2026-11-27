@@ -56,10 +56,10 @@ with spaces in the prompt label, and accepts empty values. Entered text is passe
 to Bash as typed. Escape or the left-arrow key aborts placeholder collection and
 returns to the menu.
 .PP
-Bare
+.B ${variable_name}
+is reserved for interactive menu input. Use
 .B $variable_name
-syntax is invalid. The menu reports the configuration source line and exits with
-status 1.
+to expand a Bash environment variable when the command runs.
 .SH CONFIGURATION SECURITY
 The command file must exist, be readable, not be world-writable, and be owned
 by the current user or root. Invalid JSON, empty menus, mismatched entries,

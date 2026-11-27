@@ -43,6 +43,6 @@ This prompts for `dir name:` and uses the exact entered value in the command.
 Empty values are accepted. Press Escape or the left arrow to abort collection
 and return to the menu.
 
-Only `${variable_name}` syntax is supported. Bare `$variable_name` syntax is
-invalid and reports the JSON source line.
+`${variable_name}` prompts for input when the menu item is selected. Use
+`$variable_name` to expand a Bash environment variable when the command runs.
 
