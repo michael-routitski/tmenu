@@ -4,7 +4,11 @@ IFS=$'\n\t'
 
 readonly SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 readonly TMENU_SCRIPT="${SCRIPT_DIR}/src/sh/tmenu.sh"
+readonly TMENU_MAN_PAGE="${SCRIPT_DIR}/src/sh/tmenu.1"
 readonly INSTALL_MENU="${SCRIPT_DIR}/install.menu.json"
+readonly INSTALL_ROOT="${TMENU_INSTALL_ROOT:-/usr/local}"
+readonly INSTALL_BIN_DIR="${INSTALL_ROOT%/}/bin"
+readonly INSTALL_MAN_DIR="${INSTALL_ROOT%/}/share/man/man1"
 
 readonly SUCCESS_STATUS=0
 readonly RUNTIME_ERROR_STATUS=1
@@ -17,13 +21,62 @@ show_help() {
   cat <<EOF
 Usage: $(basename "$0") [OPTIONS]
 
-Interactively select a bundled tool and install it for the current Linux user.
+Interactively select a bundled tool and install it system-wide on this Linux machine.
 
 Options:
   -n, --dry-run      Print the selected install command without executing it
   -h, --help         Show this help message and exit
 EOF
 }
+
+install_selected_tool() {
+  local install_mode="$1"
+
+  if [[ "$install_mode" != "simple" && "$install_mode" != "aliases" ]]; then
+    printf "Error: Invalid install mode '%s'.\n" "$install_mode" >&2
+    return "$INVALID_ARGUMENT_STATUS"
+  fi
+
+  if [[ -z "${HOME:-}" ]]; then
+    printf "Error: HOME is not set.\n" >&2
+    return "$RUNTIME_ERROR_STATUS"
+  fi
+
+  for dependency in sudo install; do
+    if ! command -v "$dependency" >/dev/null 2>&1; then
+      printf "Error: Missing required dependency '%s'.\n" "$dependency" >&2
+      return "$INVALID_ARGUMENT_STATUS"
+    fi
+  done
+
+  if [[ "${TMENU_INSTALL_DRY_RUN:-false}" == true ]]; then
+    printf '[dry-run] sudo install -D -m 755 %s %s\n' "$TMENU_SCRIPT" "${INSTALL_BIN_DIR}/tmenu"
+    printf '[dry-run] sudo install -D -m 644 %s %s\n' "$TMENU_MAN_PAGE" "${INSTALL_MAN_DIR}/tmenu.1"
+    return "$SUCCESS_STATUS"
+  fi
+
+  if ! sudo install -D -m 755 "$TMENU_SCRIPT" "${INSTALL_BIN_DIR}/tmenu"; then
+    printf "Error: Failed to install tmenu to %s.\n" "${INSTALL_BIN_DIR}/tmenu" >&2
+    return "$RUNTIME_ERROR_STATUS"
+  fi
+
+  if ! sudo install -D -m 644 "$TMENU_MAN_PAGE" "${INSTALL_MAN_DIR}/tmenu.1"; then
+    printf "Error: Failed to install the tmenu man page to %s.\n" "${INSTALL_MAN_DIR}/tmenu.1" >&2
+    return "$RUNTIME_ERROR_STATUS"
+  fi
+
+  mkdir -p -- "${HOME}/.tmenu"
+  printf '%s\n' "$install_mode" > "${HOME}/.tmenu/.tmenu-install-status"
+}
+
+if [[ "${1:-}" == "--install-selected" ]]; then
+  if [[ $# -ne 2 ]]; then
+    printf "Error: Internal install mode requires a selection.\n" >&2
+    exit "$INVALID_ARGUMENT_STATUS"
+  fi
+  install_selected_tool "$2"
+  exit $?
+fi
 
 dry_run=false
 
@@ -79,10 +132,11 @@ printf 'Select the tool to install\n' >&2
 cd "$SCRIPT_DIR"
 
 if [[ "$dry_run" == true ]]; then
-  exec bash "$TMENU_SCRIPT" --dry-run "$INSTALL_MENU"
+  TMENU_INSTALL_DRY_RUN=true bash "$TMENU_SCRIPT" "$INSTALL_MENU"
+  exit $?
 fi
 
-readonly INSTALL_STATUS_MARKER="${HOME}/.local/bin/.tmenu-install-status"
+readonly INSTALL_STATUS_MARKER="${HOME}/.tmenu/.tmenu-install-status"
 rm -f -- "$INSTALL_STATUS_MARKER"
 
 if bash "$TMENU_SCRIPT" "$INSTALL_MENU"; then
@@ -147,7 +201,7 @@ elif [[ ! -e "$DEFAULT_CONFIG" && "$install_mode" == "aliases" ]]; then
   printf '\n]\n' >> "$DEFAULT_CONFIG"
 fi
 
-readonly INSTALLED_EXECUTABLE="${HOME}/.local/bin/tmenu"
+readonly INSTALLED_EXECUTABLE="${INSTALL_BIN_DIR}/tmenu"
 printf "${ANSI_GREEN_PREFIX}tmenu is installed successfully in %s${ANSI_RESET}\n" "$INSTALLED_EXECUTABLE"
 printf 'Usage instructions:\n\n'
 "${INSTALLED_EXECUTABLE}" --help

@@ -1,12 +1,12 @@
 [
   {
     "name": "tmenu [with simple default menu]",
-    "run": "mkdir -p ~/.local/bin ~/.local/share/man/man1 ~/.tmenu && cp -p src/sh/tmenu.sh ~/.local/bin/tmenu && cp -p src/sh/tmenu.1 ~/.local/share/man/man1/tmenu.1 && printf 'simple\\n' > ~/.local/bin/.tmenu-install-status",
-    "confirm": false
+    "run": "bash install.sh --install-selected simple",
+    "confirm": true
   },
   {
     "name": "tmenu [with default menu from current aliases]",
-    "run": "mkdir -p ~/.local/bin ~/.local/share/man/man1 ~/.tmenu && cp -p src/sh/tmenu.sh ~/.local/bin/tmenu && cp -p src/sh/tmenu.1 ~/.local/share/man/man1/tmenu.1 && printf 'aliases\\n' > ~/.local/bin/.tmenu-install-status",
-    "confirm": false
+    "run": "bash install.sh --install-selected aliases",
+    "confirm": true
   }
 ]
